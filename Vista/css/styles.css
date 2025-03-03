@@ -1,0 +1,276 @@
+:root {
+  --background-color: #ffffff;
+  --target-color: #f7f7f7;
+  --main-color: #305ed5ff;
+  --main-color-hover: #244bae;
+  --main-complementary-color: #d53043;
+  --text-color: #484141;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+body.bg-target {
+  background-color: var(--target-color);
+}
+
+/*General*/
+* {
+  box-sizing: border-box;
+  font-family: "Nunito Sans", sans-serif;
+}
+
+.btn-comedor {
+  color: white !important;
+  background-color: var(--main-color);
+}
+.btn-comedor:hover {
+  background-color: var(--main-color-hover);
+}
+
+.link {
+  transition: transform 300ms;
+}
+.link:hover {
+  transform: scale(1.05);
+}
+.target-background {
+  background-color: var(--target-color);
+}
+.main-background {
+  background-color: var(--main-color);
+}
+.sidebar-shadow {
+  box-shadow: -2px 0px 5px -5px rgba(30, 30, 60, 0.13);
+}
+.general-shadow {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+.main-color-background {
+  background-color: var(--main-color);
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5em 2em;
+  position: relative;
+  z-index: 5;
+  background-color: var(--main-color);
+}
+.footer {
+  position: relative;
+  z-index: 5;
+}
+.fa-gear {
+  transition: transform 300ms;
+}
+.fa-gear:hover {
+  transform: rotate(360deg);
+}
+.logo-covao {
+  display: block;
+  width: 110px;
+  margin-left: 2em;
+  margin-bottom: 1em;
+}
+.menu-list {
+  padding: 0 0.75em;
+  list-style: none;
+  margin: 0;
+}
+.menu-list__item {
+  padding: 0.5em 1em;
+  /*width: max-content;*/
+  /*width: 75%;*/
+  cursor: pointer;
+  border-radius: 0.4em;
+  margin-bottom: 0.5em;
+  transition: background-color 200ms, color 100ms, transform 100ms;
+}
+.menu-list__item:hover {
+  background-color: var(--main-color);
+  transform: scale(1.01);
+}
+.menu-list__item:hover > a {
+  color: white !important;
+}
+.menu-list__link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+.settings__icons {
+  color: var(--text-color);
+}
+/*Login*/
+.login-image {
+  display: block;
+  height: 100vh;
+  max-height: 100vh;
+}
+
+.form-translate {
+  transition: transform 300ms;
+}
+.form-translate-active {
+  transform: translateX(-50%);
+}
+
+/*Administrador*/
+.admin-menu {
+  width: max-content;
+  background-color: var(--target-color);
+}
+
+/*Input File*/
+.inputfile {
+  overflow: hidden;
+  position: absolute;
+  z-index: 10;
+  opacity: 0;
+  width: 100%;
+  height: 400px;
+}
+
+.inputfile + label {
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 3px dashed var(--text-color);
+  border-radius: 0.2em;
+  width: 100%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0.5em;
+}
+
+.inputfile + label svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  fill: currentColor;
+}
+
+.inputfile-5 + label figure {
+  width: 125px;
+  height: 125px;
+  border-radius: 50%;
+  background-color: var(--background-color);
+  display: block;
+  padding: 20px;
+}
+
+.inputfile-5 + label svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--text-color);
+}
+
+/*Loader*/
+.loader {
+  width: 28px;
+  height: 28px;
+  border: 5px solid;
+  border-color: var(--main-color) transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s cubic-bezier(0.65, 0.05, 0.36, 1) infinite;
+}
+
+.table__red-button,
+.table__blue-button,
+.table__green-button {
+  transition: background-color 300ms;
+}
+
+.table__red-button {
+  background-color: #f74949;
+}
+.table__red-button:hover {
+  background-color: hsl(0, 92%, 53%);
+}
+
+.table__blue-button {
+  background-color: #5ca5ea;
+}
+.table__blue-button:hover {
+  background-color: hsl(209, 77%, 54%);
+}
+
+.table__green-button {
+  background-color: #1cce28;
+}
+.table__green-button:hover {
+  background-color: hsl(124, 76%, 36%);
+}
+
+.selectedRow {
+  background-color: #d0d2d2;
+}
+
+.fotoMiPerfil {
+  border-radius: 50%;
+  width: 13rem;
+  height: 13rem;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/*Media Querys*/
+@media screen and (max-width: 480px) {
+  .asistencia-section > h1 {
+    text-align: center;
+  }
+  .login-form-target {
+    width: 90% !important;
+  }
+  .profile-card {
+    width: 95% !important;
+  }
+}
+
+@media screen and (max-width: 980px) {
+  .fa-bars {
+    display: block !important;
+  }
+  .admin-menu {
+    display: none;
+  }
+  .header i {
+    font-size: 1.45rem;
+  }
+  .asistencia-section {
+    width: 90% !important;
+  }
+  .mobile-target {
+    width: 90% !important;
+  }
+  .mobile-target2 {
+    width: 100% !important;
+  }
+  .login-image {
+    display: none;
+  }
+  .login-section {
+    width: 100% !important;
+    min-height: 100vh;
+  }
+  .input-s {
+    width: 50%;
+  }
+}
