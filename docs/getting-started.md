@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide covers setting up SCMS (School Canteen Management System) for local development using PHP and MySQL directly on your machine.
+This guide covers setting up SCMS (School Cafeteria Management System) for local development using PHP and MySQL directly on your machine.
 
 If you prefer to run everything inside Docker containers instead, see [Docker Guide](./docker-guide.md).
 
@@ -32,7 +32,7 @@ mysql --version
 ## 1. Clone the Repository
 
 ```bash
-git clone <repository-url> scms
+git clone https://github.com/ecx2f/scms.git scms
 cd scms
 ```
 

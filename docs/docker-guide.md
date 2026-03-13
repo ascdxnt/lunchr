@@ -19,7 +19,7 @@ docker compose version
 ### 1. Clone and enter the project
 
 ```bash
-git clone <repository-url> scms
+git clone https://github.com/ecx2f/scms.git scms
 cd scms
 ```
 
