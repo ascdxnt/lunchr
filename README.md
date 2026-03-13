@@ -1,6 +1,6 @@
 # scms
 
-school canteen management system — a php web application for managing student canteen services, meals, billing, and attendance tracking.
+school cafeteria management system — a php web application for managing student cafeteria services, meals, billing, and attendance tracking.
 
 ## features
 
