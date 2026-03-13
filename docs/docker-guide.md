@@ -70,12 +70,12 @@ On first run the database is empty. Create an admin:
 docker compose exec app php -r "echo password_hash('admin123', PASSWORD_DEFAULT) . PHP_EOL;"
 ```
 
-Copy the hash, then insert the admin:
+Copy the hash, then insert the admin. note: escape the `$` characters with `\` so the shell doesn't interpret them as variables:
 
 ```bash
 docker compose exec db mysql -u root -proot COMEDOR -e "
   INSERT INTO FUNCIONARIO (PERFIL, NOMBRE, PRIMERAPELLIDO, SEGUNDOAPELLIDO, CORREO, CONTRASENA, ESTADO)
-  VALUES (1, 'Admin', 'Admin', 'Admin', 'admin@example.com', '<paste_hash_here>', 1);
+  VALUES (1, 'Admin', 'Admin', 'Admin', 'admin@example.com', '\$2y\$12\$...', 1);
 "
 ```
 
