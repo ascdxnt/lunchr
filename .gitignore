@@ -1,0 +1,25 @@
+# environment
+.env
+
+# agents
+AGENTS.md
+
+# ide
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# os
+.DS_Store
+Thumbs.db
+
+# uploads
+View/assets/profile/*
+!View/assets/profile/default.jpg
+
+# dependencies (future)
+vendor/
+node_modules/
+composer.lock
