@@ -1,35 +1,35 @@
 # Docker Guide
 
-Run SCMS entirely inside Docker containers -- no need to install PHP or MySQL on your machine. You only need **Docker** and **Docker Compose**.
+Run SCMS entirely inside Docker containers. No PHP or MySQL installation required -- only **Docker** and **Docker Compose**.
+
+If you prefer to run PHP locally, see [Getting Started](./getting-started.md) instead.
 
 ## Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/macOS) or [Docker Engine](https://docs.docker.com/engine/install/) (Linux)
 - Docker Compose v2+ (included with Docker Desktop)
 
-Verify your installation:
+Verify:
 
 ```bash
 docker --version
 docker compose version
 ```
 
-## Quick Start
-
-### 1. Clone and enter the project
+## 1. Clone the repository
 
 ```bash
 git clone https://github.com/ecx2f/scms.git scms
 cd scms
 ```
 
-### 2. Create your environment file
+## 2. Configure environment
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your preferred settings:
+Edit `.env`:
 
 ```env
 DB_HOST=db
@@ -41,29 +41,29 @@ APP_PORT=8080
 DB_PORT=3306
 ```
 
-> **Important:** When using Docker, `DB_HOST` must be set to `db` (the service name in `docker-compose.yml`), not `localhost`.
+> **Important:** `DB_HOST` must be `db` (the service name in `docker-compose.yml`), not `localhost`.
 
-### 3. Start the containers
+## 3. Start the containers
 
 ```bash
 docker compose up -d
 ```
 
 This will:
-1. Build the PHP/Apache container from the `Dockerfile`
+1. Build the PHP 8.5 / Apache container from the `Dockerfile`
 2. Pull and start a MySQL 8.0 container
-3. Automatically import the database schema from `querys.sql`
+3. Import the database schema from `querys.sql` on first run
 4. Wait for MySQL to be healthy before starting the app
 
-### 4. Open the application
+## 4. Open the application
 
 Go to: **http://localhost:8080**
 
 (Or whatever port you set in `APP_PORT`)
 
-### 5. Create an initial admin user
+## 5. Create an admin user
 
-On first run the database is empty. Create an admin user:
+On first run the database is empty. Create an admin:
 
 ```bash
 # Generate a password hash
@@ -79,9 +79,7 @@ docker compose exec db mysql -u root -proot COMEDOR -e "
 "
 ```
 
-Log in with:
-- **Email:** `admin@example.com`
-- **Password:** `admin123`
+Log in with `admin@example.com` / `admin123`.
 
 ## Container Architecture
 
@@ -90,76 +88,42 @@ Log in with:
 │   scms-app          │     │   scms-db            │
 │   PHP 8.5 + Apache  │────>│   MySQL 8.0          │
 │   Port: 8080        │     │   Port: 3306         │
-│                     │     │                     │
-│   Serves the app    │     │   Database: COMEDOR  │
-│   at /var/www/html  │     │   Data: db_data vol  │
+│                     │     │                      │
+│   Serves the app    │     │   Database: COMEDOR   │
+│   at /var/www/html  │     │   Data: db_data vol   │
 └─────────────────────┘     └─────────────────────┘
 ```
 
-| Container  | Image            | Purpose                        |
-|------------|------------------|--------------------------------|
-| `scms-app` | Custom (PHP 8.5) | Runs PHP with Apache           |
-| `scms-db`  | `mysql:8.0`      | MySQL database                 |
+| Container  | Image            | Purpose              |
+|------------|------------------|----------------------|
+| `scms-app` | Custom (PHP 8.5) | Runs PHP with Apache |
+| `scms-db`  | `mysql:8.0`      | MySQL database       |
 
 ## Common Commands
 
-### Start containers (background)
-
 ```bash
+# Start containers
 docker compose up -d
-```
 
-### Stop containers
-
-```bash
+# Stop containers
 docker compose down
-```
 
-### Stop and remove all data (reset database)
-
-```bash
+# Stop and wipe database (re-imports schema on next start)
 docker compose down -v
-```
 
-> The `-v` flag removes the `db_data` volume, which wipes the database. On the next `up`, the schema will be re-imported from `querys.sql`.
-
-### View logs
-
-```bash
-# All containers
+# View logs (all / app only / db only)
 docker compose logs -f
-
-# Only the app
 docker compose logs -f app
-
-# Only the database
 docker compose logs -f db
-```
 
-### Rebuild after changes to Dockerfile
-
-```bash
+# Rebuild after Dockerfile changes
 docker compose up -d --build
-```
 
-### Run a PHP command inside the container
-
-```bash
+# Run PHP inside the container
 docker compose exec app php -v
-docker compose exec app php -r "echo 'Hello from container';"
-```
 
-### Access MySQL shell
-
-```bash
+# Access MySQL shell
 docker compose exec db mysql -u root -proot COMEDOR
-```
-
-### Re-import the database schema
-
-```bash
-docker compose down -v
-docker compose up -d
 ```
 
 ## Customizing Ports
@@ -183,12 +147,12 @@ docker compose up -d
 ### "Connection refused" when opening the app
 
 - Make sure both containers are running: `docker compose ps`
-- Check if the app is waiting for the database: `docker compose logs app`
-- The health check ensures the app waits for MySQL, but the first start may take 20-30 seconds
+- Check logs: `docker compose logs app`
+- The first start may take 20-30 seconds while MySQL initializes
 
 ### Database schema not loaded
 
-The schema is only imported on the **first run** (when the `db_data` volume is created). If you need to re-import:
+The schema is only imported on the **first run** (when the `db_data` volume is created). To re-import:
 
 ```bash
 docker compose down -v
@@ -197,15 +161,13 @@ docker compose up -d
 
 ### Changes to PHP files not reflected
 
-The project directory is mounted as a volume, so file changes are reflected immediately. If you still don't see changes:
+The project directory is mounted as a volume, so file changes should be reflected immediately. If not:
 
 ```bash
 docker compose restart app
 ```
 
 ### Permission issues (Linux)
-
-If you get permission errors on Linux, ensure your user can run Docker:
 
 ```bash
 sudo usermod -aG docker $USER

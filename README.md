@@ -12,30 +12,15 @@ school cafeteria management system — a php web application for managing studen
 - profile photo uploads
 - automated password generation and email notifications
 
-## quick start
+## setup
 
-```bash
-cp .env.example .env
-# edit .env with your database credentials
-php -S localhost:8080
-```
+there are three ways to run this project. pick whichever fits your environment:
 
-see [docs/getting-started.md](docs/getting-started.md) for the full setup guide.
-
-## docker
-
-```bash
-cp .env.example .env
-# edit .env: set DB_HOST=db, DB_PASS=root
-docker compose up -d
-```
-
-see [docs/docker-guide.md](docs/docker-guide.md) for the full docker tutorial.
-
-## documentation
-
-- [getting started](docs/getting-started.md) — local php + mysql setup
-- [docker guide](docs/docker-guide.md) — run everything in containers
+| option | what you install locally | guide |
+|--------|------------------------|-------|
+| pure php + mysql | php, mysql | [getting started — option a](docs/getting-started.md#option-a-pure-php--mysql) |
+| db only in docker | php, docker | [getting started — option b](docs/getting-started.md#option-b-php-local--mysql-in-docker) |
+| full docker | docker | [docker guide](docs/docker-guide.md) |
 
 ## tech stack
 
@@ -68,4 +53,4 @@ docs/               documentation
 
 ## license
 
-[mit](LICENSE)
+[MIT](LICENSE)

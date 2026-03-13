@@ -1,20 +1,31 @@
 # Getting Started
 
-This guide covers setting up SCMS (School Cafeteria Management System) for local development using PHP and MySQL directly on your machine.
+This guide covers two ways to run SCMS locally with PHP on your machine. The difference is where MySQL runs.
 
-If you prefer to run everything inside Docker containers instead, see [Docker Guide](./docker-guide.md).
+| Option | PHP | MySQL | You need |
+|--------|-----|-------|----------|
+| [A — Pure PHP + MySQL](#option-a-pure-php--mysql) | local | local | PHP, MySQL |
+| [B — PHP local + MySQL in Docker](#option-b-php-local--mysql-in-docker) | local | Docker container | PHP, Docker |
 
-## Prerequisites
+If you want **everything** in Docker (no local PHP either), see the [Docker Guide](./docker-guide.md) instead.
+
+---
+
+## Option A: Pure PHP + MySQL
+
+Both PHP and MySQL are installed directly on your machine.
+
+### Prerequisites
 
 - **PHP 8.1+** with the `mysqli` extension enabled
 - **MySQL 8.0+** (or MariaDB 10.5+)
-- A terminal (Command Prompt, PowerShell, Bash, etc.)
 
-### Verify PHP
+Verify:
 
 ```bash
 php -v
 php -m | grep mysqli
+mysql --version
 ```
 
 If `mysqli` is not listed, enable it in your `php.ini`:
@@ -23,51 +34,21 @@ If `mysqli` is not listed, enable it in your `php.ini`:
 extension=mysqli
 ```
 
-### Verify MySQL
-
-```bash
-mysql --version
-```
-
-## 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/ecx2f/scms.git scms
 cd scms
 ```
 
-## 2. Create the Database
-
-Connect to MySQL and import the schema:
+### 2. Create the database
 
 ```bash
-mysql -u root -p
-```
-
-Inside the MySQL shell:
-
-```sql
-CREATE DATABASE IF NOT EXISTS COMEDOR;
-USE COMEDOR;
-SOURCE querys.sql;
-EXIT;
-```
-
-Or as a single command:
-
-```bash
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS COMEDOR;"
 mysql -u root -p COMEDOR < querys.sql
 ```
 
-> If the database `COMEDOR` does not exist yet, create it first:
-> ```bash
-> mysql -u root -p -e "CREATE DATABASE COMEDOR;"
-> mysql -u root -p COMEDOR < querys.sql
-> ```
-
-## 3. Configure Environment Variables
-
-Copy the example file and fill in your database credentials:
+### 3. Configure environment
 
 ```bash
 cp .env.example .env
@@ -82,67 +63,149 @@ DB_PASS=your_mysql_password
 DB_NAME=COMEDOR
 ```
 
-If your MySQL has no password (common in local dev), leave `DB_PASS` empty:
+If your MySQL has no password, leave `DB_PASS` empty:
 
 ```env
 DB_PASS=
 ```
 
-## 4. Start the Development Server
-
-Use PHP's built-in web server:
+### 4. Start the server
 
 ```bash
 php -S localhost:8080
 ```
 
-Open your browser and go to: **http://localhost:8080**
+Open **http://localhost:8080**.
 
-## 5. Create an Initial Admin User
+### 5. Create an admin user
 
-There is no registration page. You need to insert an admin user directly into the database.
-
-Generate a password hash first:
+There is no registration page. Insert an admin directly:
 
 ```bash
 php -r "echo password_hash('admin123', PASSWORD_DEFAULT) . PHP_EOL;"
 ```
 
-Copy the output hash and insert the admin record:
+Copy the hash and run:
 
-```sql
-INSERT INTO FUNCIONARIO (PERFIL, NOMBRE, PRIMERAPELLIDO, SEGUNDOAPELLIDO, CORREO, CONTRASENA, ESTADO)
-VALUES (1, 'Admin', 'Admin', 'Admin', 'admin@example.com', '<paste_hash_here>', 1);
+```bash
+mysql -u root -p COMEDOR -e "
+  INSERT INTO FUNCIONARIO (PERFIL, NOMBRE, PRIMERAPELLIDO, SEGUNDOAPELLIDO, CORREO, CONTRASENA, ESTADO)
+  VALUES (1, 'Admin', 'Admin', 'Admin', 'admin@example.com', '<paste_hash_here>', 1);
+"
 ```
 
-Now log in at http://localhost:8080 with:
-- **Email:** `admin@example.com`
-- **Password:** `admin123`
+Log in with `admin@example.com` / `admin123`.
 
-## Project Structure
+---
 
+## Option B: PHP local + MySQL in Docker
+
+PHP runs on your machine, MySQL runs in a Docker container. This is useful if you don't want to install MySQL locally.
+
+### Prerequisites
+
+- **PHP 8.1+** with the `mysqli` extension enabled
+- **Docker** and **Docker Compose v2+**
+
+Verify:
+
+```bash
+php -v
+php -m | grep mysqli
+docker --version
+docker compose version
 ```
-index.php              # Entry point / front controller
-Core/                  # Router, default routes, password config
-Controller/            # MVC controllers
-  admin/               #   Admin CRUD controllers
-  billing/             #   Billing controllers
-  client/              #   Client-facing controllers
-  helpers/             #   Utility controllers (email, password, dates, photos)
-Model/                 # MVC models
-  Connection.php       #   Database connection (mysqli + .env support)
-  Entities/            #   Entity classes (plain PHP objects)
-  Methods/             #   Data access classes (queries per entity)
-View/                  # MVC views
-  views/               #   PHP view templates
-    admin/             #     Admin views
-    billing/           #     Billing views
-    client/            #     Client views
-    components/        #     Reusable components (Head, Header, menus)
-  css/                 #   Stylesheets
-  js/                  #   JavaScript
-  assets/              #   Images, audio, favicons, profile photos
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/ecx2f/scms.git scms
+cd scms
 ```
+
+### 2. Start MySQL in Docker
+
+```bash
+docker compose -f docker-compose.db.yml up -d
+```
+
+This starts a MySQL 8.0 container on port 3306 and automatically imports the schema from `querys.sql`.
+
+Wait a few seconds for MySQL to finish initializing. You can check:
+
+```bash
+docker compose -f docker-compose.db.yml logs -f db
+```
+
+Look for `ready for connections` in the output, then press `Ctrl+C`.
+
+### 3. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=root
+DB_NAME=COMEDOR
+```
+
+> `DB_HOST` is `localhost` here because PHP runs on your machine and connects to the container's exposed port.
+
+If port 3306 is already in use, change `DB_PORT` in `.env` and restart the container:
+
+```env
+DB_PORT=3307
+```
+
+```bash
+docker compose -f docker-compose.db.yml down
+docker compose -f docker-compose.db.yml up -d
+```
+
+### 4. Start the server
+
+```bash
+php -S localhost:8080
+```
+
+Open **http://localhost:8080**.
+
+### 5. Create an admin user
+
+```bash
+php -r "echo password_hash('admin123', PASSWORD_DEFAULT) . PHP_EOL;"
+```
+
+Copy the hash and run:
+
+```bash
+docker compose -f docker-compose.db.yml exec db mysql -u root -proot COMEDOR -e "
+  INSERT INTO FUNCIONARIO (PERFIL, NOMBRE, PRIMERAPELLIDO, SEGUNDOAPELLIDO, CORREO, CONTRASENA, ESTADO)
+  VALUES (1, 'Admin', 'Admin', 'Admin', 'admin@example.com', '<paste_hash_here>', 1);
+"
+```
+
+Log in with `admin@example.com` / `admin123`.
+
+### Managing the database container
+
+```bash
+# Stop
+docker compose -f docker-compose.db.yml down
+
+# Stop and wipe data (re-imports schema on next start)
+docker compose -f docker-compose.db.yml down -v
+
+# Access MySQL shell
+docker compose -f docker-compose.db.yml exec db mysql -u root -proot COMEDOR
+```
+
+---
 
 ## User Roles
 
@@ -156,7 +219,7 @@ View/                  # MVC views
 
 ### "Connection error" on page load
 
-- Verify MySQL is running
+- Verify MySQL is running (locally or in Docker)
 - Check `.env` credentials match your MySQL setup
 - Ensure the `COMEDOR` database exists and the schema was imported
 
