@@ -283,6 +283,8 @@ if (isset($_REQUEST['alerta'])) {
 	$alertName = $_REQUEST['alerta'];
 	if ($alertName == "error") {
 		echo "<script>alertify.error('Imagen no válida.');</script>";
+	} else if ($alertName == "duplicado") {
+		echo "<script>alertify.error('Ya existe un profesor con esa cédula o correo.');</script>";
 	}
 }
 ?>

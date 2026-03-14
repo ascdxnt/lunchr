@@ -1,5 +1,4 @@
 <?php
-session_start();
 //Active session time in minutes
 //session_cache_expire(460);
 require_once './Controller/helpers/EmailController.php';
@@ -90,6 +89,7 @@ class IndexController
 		$teacherMethods = new TeacherMethods();
 		$_SESSION['perfiles'] = null;
 
+
 		if (isset($_POST['correo']) && isset($_POST['contrasena'])) {
 			$email = $_POST['correo'];
 			$password = $_POST['contrasena'];
@@ -106,14 +106,16 @@ class IndexController
 							'Correo' => $f->getEmail()
 						);
 						if ($f->getProfile() == 1) {
-							$_SESSION['usuario'] += array('Perfil' => 'Administrador');
-							$_SESSION['perfiles']  = 'admin';
-							header('Location: ?dir=admin&controller=AdminStatistics&action=Index');
-						} else if ($f->getProfile() == 2) {
-							$_SESSION['usuario'] += array('Perfil' => 'Cobrador');
-							$_SESSION['perfiles']  = 'billing';
-							header('Location: ./?dir=billing&controller=StudentBilling&action=Index');
-						}
+						$_SESSION['usuario'] += array('Perfil' => 'Administrador');
+						$_SESSION['perfiles']  = 'admin';
+						header('Location: ./?dir=admin&controller=AdminStatistics&action=Index');
+						exit;
+					} else if ($f->getProfile() == 2) {
+						$_SESSION['usuario'] += array('Perfil' => 'Cobrador');
+						$_SESSION['perfiles']  = 'billing';
+						header('Location: ./?dir=billing&controller=StudentBilling&action=Index');
+						exit;
+					}
 					}
 				}
 			}
@@ -131,17 +133,18 @@ class IndexController
 							'Foto' => $p->getProfilePhoto()
 						);
 						$_SESSION['usuario'] += array('Perfil' => 'Profesor', 'Comidas' => $p->getMeals(), 'Cedula' => $p->getIdCard());
-						$_SESSION['perfiles']  = 'client';
-						$teacherId = $_SESSION['usuario']['Id'];
-						header('Location: ./?dir=client&controller=ClientHome&action=Index&id=' . $teacherId . '&perfil=Profesor');
-					}
+					$_SESSION['perfiles']  = 'client';
+					$teacherId = $_SESSION['usuario']['Id'];
+					header('Location: ./?dir=client&controller=ClientHome&action=Index&id=' . $teacherId . '&perfil=Profesor');
+					exit;
 				}
 			}
+		}
 
-			$allStudents = $studentMethods->FindAll();
-			if (isset($allStudents)) {
-				foreach ($allStudents as $e) {
-					if ($e->getEmail() == $email && password_verify($password, $e->getPassword()) && $e->getStatus() == 1) {
+		$allStudents = $studentMethods->FindAll();
+		if (isset($allStudents)) {
+			foreach ($allStudents as $e) {
+				if ($e->getEmail() == $email && password_verify($password, $e->getPassword()) && $e->getStatus() == 1) {
 						$section = new Section();
 						$specialty = new Specialty();
 						$specialtyMethods = new SpecialtyMethods();
@@ -165,14 +168,14 @@ class IndexController
 							'Especialidad' => $specialty->getDescription(),
 							'Seccion' => $section->getDescription()
 						);
-						$_SESSION['perfiles']  = 'client';
-						$studentId = $_SESSION['usuario']['Id'];
-						header('Location: ./?dir=client&controller=ClientHome&action=Index&id=' . $studentId . '&perfil=Estudiante');
-					}
+					$_SESSION['perfiles']  = 'client';
+					$studentId = $_SESSION['usuario']['Id'];
+					header('Location: ./?dir=client&controller=ClientHome&action=Index&id=' . $studentId . '&perfil=Estudiante');
+					exit;
 				}
 			}
-			if ($_SESSION['perfiles'] == null)
-				header('Location: ./?alerta=error');
+		}
+		header('Location: ./?alerta=error');
 		} else
 			header('Location: ./?alerta=error');
 	}

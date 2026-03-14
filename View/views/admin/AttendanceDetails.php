@@ -36,7 +36,7 @@ else $status = 1;
                 <div class="py-3 px-4 rounded overflow-auto float-start general-shadow mobile-target mx-auto mobile-target2" style="min-width: 30%;">
                     <h3 class="fs-5 fw-bold mb-4">Desgloce</h3>
                     <p>Cédula:
-                        <?php echo $client->getCedula() ?>
+                        <?php echo $client->getIdCard() ?>
                     </p>
                     <?php
                     if ($profile == "Estudiante") {

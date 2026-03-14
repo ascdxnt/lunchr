@@ -116,7 +116,7 @@ class AttendanceController
 		$attendanceMethods = new AttendanceMethods();
 		$dateController = new DateController();
 
-		if ($studentId != null || $studentId != 0)
+		if ($studentId != null && $studentId != 0)
 			$clientAttendances = $attendanceMethods->FindStudentAttendances($studentId);
 		else
 			$clientAttendances = $attendanceMethods->FindTeacherAttendances($teacherId);

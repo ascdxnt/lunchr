@@ -69,9 +69,9 @@ if ($_SESSION["perfiles"] != 'admin') {
 						<?php
 						if ($allSpecialties != null) {
 							foreach ($allSpecialties as $specialty) {
-								if ($specialty->getEstado() == 1) {
-						?>
-								<option value="<?php echo $specialty->getId(); ?>"><?php echo $specialty->getDescripcion(); ?></option>
+					if ($specialty->getStatus() == 1) {
+					?>
+							<option value="<?php echo $specialty->getId(); ?>"><?php echo $specialty->getDescription(); ?></option>
 						<?php
 								}
 							}
@@ -85,9 +85,9 @@ if ($_SESSION["perfiles"] != 'admin') {
 						<?php
 						if ($allSections != null) {
 							foreach ($allSections as $section) {
-								if ($section->getEstado() == 1) {
-						?>
-								<option value="<?php echo $section->getId(); ?>"> <?php echo $section->getDescripcion(); ?></option>
+					if ($section->getStatus() == 1) {
+					?>
+							<option value="<?php echo $section->getId(); ?>"> <?php echo $section->getDescription(); ?></option>
 						<?php
 								}
 							}
@@ -159,15 +159,15 @@ if ($_SESSION["perfiles"] != 'admin') {
 			<?php
 			if ($allSpecialties != null) {
 				foreach ($allSpecialties as $specialty) {
-					if ($specialty->getEstado() == 1) {
-			?>
-					<tr>
-						<td>Fernando</td>
-						<td>Camacho</td>
-						<td>Solano</td>
-						<td>numCedula</td>
-						<td>correo@gmail.com</td>
-						<td><?php echo $specialty->getDescripcion(); ?></td>
+			if ($specialty->getStatus() == 1) {
+		?>
+				<tr>
+					<td>Fernando</td>
+					<td>Camacho</td>
+					<td>Solano</td>
+					<td>numCedula</td>
+					<td>correo@gmail.com</td>
+					<td><?php echo $specialty->getDescription(); ?></td>
 						<td>10-A</td>
 						<td>
 							<?php
@@ -352,6 +352,8 @@ if (isset($_REQUEST['alerta'])) {
 	$alertName = $_REQUEST['alerta'];
 	if ($alertName == "error") {
 		echo "<script>alertify.error('Imagen no válida.');</script>";
+	} else if ($alertName == "duplicado") {
+		echo "<script>alertify.error('Ya existe un estudiante con esa cédula o correo.');</script>";
 	}
 }
 ?>

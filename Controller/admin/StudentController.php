@@ -109,6 +109,11 @@ class StudentController
 		$student->setProfilePhoto($photoPath);
 
 		if ($student->getName() != null && $student->getFirstLastName() != null && $student->getSecondLastName() != null && $student->getIdCard() != null && $student->getPassword() != null && $student->getEmail() != null && $student->getSpecialtyId() != null && $student->getSectionId() != null && $student->getScholarship() != null && $student->getProfilePhoto() != null) {
+			if ($studentMethods->FindByIdCard($student->getIdCard()) || $studentMethods->FindByEmail($student->getEmail())) {
+				$profilePhotoController->DeleteProfilePhoto($student->getProfilePhoto());
+				header('Location: ./?dir=admin&controller=Student&action=Index&id=crear&alerta=duplicado');
+				return;
+			}
 			if ($studentMethods->Create($student)) {
 				$subject = "Cuenta de Comedor";
 				$emailTemplate->IndividualEmail($student->getEmail(), $subject, $password, $student->getName(), $student->getFirstLastName());
@@ -229,7 +234,7 @@ class StudentController
 
 		if ($student = $studentMethods->Find($id)) {
 			$photoPath = $student->getProfilePhoto();
-			if ($name != null) {
+			if ($name != null && $name != "") {
 				$photoPath = $profilePhotoController->GenerateProfilePhoto($name, $tmp_path, $size, $type);
 				$profilePhotoController->DeleteProfilePhoto($student->getProfilePhoto());
 			}
@@ -243,7 +248,7 @@ class StudentController
 			$student->setSectionId($sectionId);
 			if (filter_var($email, FILTER_VALIDATE_EMAIL))
 				$student->setEmail($email);
-			if ($password != null) {
+			if ($password != null && $password != "") {
 				$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 				$student->setPassword($hashedPassword);
 				$studentMethods->UpdatePassword($hashedPassword, $id);

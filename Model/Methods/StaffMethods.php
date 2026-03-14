@@ -149,15 +149,13 @@ class StaffMethods
 
 	function UpdatePassword($password, $staffId)
 	{
-		$success = false;
 		$connection = new Connection();
-
-		$sql = "UPDATE FUNCIONARIO SET CONTRASENA='" . $password . "'
-                                        Where `ID` =" . $staffId;
-		if ($connection->Execute($sql)) {
-			$success = true;
-		}
-		$connection->Close();
+		$mysqli = $connection->Raw();
+		$stmt = $mysqli->prepare("UPDATE FUNCIONARIO SET CONTRASENA=? WHERE ID=?");
+		$stmt->bind_param('si', $password, $staffId);
+		$success = $stmt->execute();
+		$stmt->close();
+		$mysqli->close();
 		return $success;
 	}
 }

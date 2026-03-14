@@ -3,7 +3,7 @@ $head = file_get_contents('./View/views/components/Head.php');
 $header = file_get_contents('./View/views/components/Header.php');
 $sidebar = file_get_contents('./View/views/components/BillingMenu.php');
 
-if ($_SESSION["perfiles"] != 'cobros') {
+if ($_SESSION["perfiles"] != 'billing') {
     header('Location: ./?alerta=error');
 }
 

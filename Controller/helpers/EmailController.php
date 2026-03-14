@@ -22,9 +22,6 @@ class EmailController
 		$headers .= 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 
-		if (mail($recipient, $subject, $messageBody, $headers))
-			return true;
-		else
-			return false;
+		return @mail($recipient, $subject, $messageBody, $headers);
 	}
 }

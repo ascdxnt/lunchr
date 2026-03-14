@@ -38,8 +38,21 @@ class Connection
 				. mysqli_connect_error());
 		}
 		$this->mysqli->autocommit(TRUE);
+		mysqli_report(MYSQLI_REPORT_OFF);
 		$result = $this->mysqli->query($query);
 		return $result;
+	}
+
+	function Raw()
+	{
+		$this->loadEnv();
+		$host = getenv('DB_HOST') ?: 'localhost';
+		$user = getenv('DB_USER') ?: 'root';
+		$pass = getenv('DB_PASS') ?: '';
+		$db   = getenv('DB_NAME') ?: 'COMEDOR';
+		$this->mysqli = new mysqli($host, $user, $pass, $db);
+		mysqli_report(MYSQLI_REPORT_OFF);
+		return $this->mysqli;
 	}
 
 	function Close()

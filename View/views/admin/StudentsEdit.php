@@ -54,59 +54,48 @@ if ($_SESSION["perfiles"] != 'admin') {
 				<label for="correo" class="form-label">Cedula</label>
 				<input value="<?php echo $idCard; ?>" type="text" class="form-control" id="cedulaModificar" name="cedulaModificar">
 			</div>
-			<div class="mb-3 manual">
-				<label for="correo" class="form-label">Especialidad</label>
-				<input value="<?php echo $specialtyN; ?>" type="text" class="form-control" id="especialidadModificar" name="especialidadModificar" hidden>
-				<select class="form-control" name="especialidadModificar" id="idEspecialidad">
-					<?php
-					if ($allSpecialties != null) {
-						foreach ($allSpecialties as $specialty) {
-							if ($specialty->getEstado() == 1) {
-								if ($specialty->getId() == $specialtyN) {
-					?>
-								<option value="<?php echo $specialty->getId(); ?>" selected> <?php echo $specialty->getDescripcion(); ?></option>
-							<?php
-								} else {
-							?>
-								<option value="<?php echo $specialty->getId(); ?>"> <?php echo $specialty->getDescripcion(); ?></option>
-					<?php
-								}
-							}
+		<div class="mb-3">
+			<label for="idEspecialidad" class="form-label">Especialidad</label>
+			<select class="form-control" name="especialidadModificar" id="idEspecialidad">
+				<?php
+				if ($allSpecialties != null) {
+					foreach ($allSpecialties as $specialty) {
+						if ($specialty->getStatus() == 1) {
+							$selected = ($specialty->getId() == $specialtyN) ? 'selected' : '';
+				?>
+							<option value="<?php echo $specialty->getId(); ?>" <?php echo $selected; ?>><?php echo $specialty->getDescription(); ?></option>
+				<?php
 						}
 					}
-					?>
-				</select>
-			</div>
-			<div class="manual mb-3">
-				<label for="idSeccion" class="form-label">Seleccionar Seccion</label>
-				<select class="form-control" name="seccionModificar" id="seccionModificar">
-					<?php
-					if ($allSections != null) {
-						foreach ($allSections as $section) {
-							if ($section->getEstado() == 1) {
-								if ($section->getId() == $sectionN) {
-					?>
-								<option value="<?php echo $section->getId(); ?>" selected> <?php echo $section->getDescripcion(); ?></option>
-							<?php
-								} else {
-							?>
-								<option value="<?php echo $section->getId(); ?>"> <?php echo $section->getDescripcion(); ?></option>
-					<?php
-								}
-							}
+				}
+				?>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label for="seccionModificar" class="form-label">Seleccionar Seccion</label>
+			<select class="form-control" name="seccionModificar" id="seccionModificar">
+				<?php
+				if ($allSections != null) {
+					foreach ($allSections as $section) {
+						if ($section->getStatus() == 1) {
+							$selected = ($section->getId() == $sectionN) ? 'selected' : '';
+				?>
+							<option value="<?php echo $section->getId(); ?>" <?php echo $selected; ?>><?php echo $section->getDescription(); ?></option>
+				<?php
 						}
 					}
-					?>
-				</select>
-			</div>
+				}
+				?>
+			</select>
+		</div>
 			<div class="mb-3 manual">
 				<label for="correo" class="form-label">Correo</label>
 				<input value="<?php echo $email; ?>" type="email" class="form-control" id="correoModificar" name="correoModificar">
 			</div>
-			<div class="mb-3">
-				<label for="contrasena" class="form-label">Contraseña</label>
-				<input value="" type="password" class="form-control" id="contrasenaModificar" name="contrasenaModificar" placeholder="Este campo es opcional">
-			</div>
+		<div class="mb-3">
+			<label for="contrasenaModificar" class="form-label">Contraseña <small class="text-muted">(opcional)</small></label>
+			<input value="" type="password" class="form-control" id="contrasenaModificar" name="contrasenaModificar" placeholder="Dejar en blanco para no cambiar">
+		</div>
 			<div class="mb-3">
 				<label for="inputProfilePhoto" class="form-label">Cambiar Foto de Perfil (Opcional)</label>
 				<input id="inputProfilePhoto" type="file" accept="image/jpg, image/png, image/jpeg" name="profile-image" class="form-control" />
@@ -125,26 +114,16 @@ if ($_SESSION["perfiles"] != 'admin') {
 	</main>
 
 	<script>
-		// Validations
-		let manualInputs = [...document.getElementsByClassName('manual')];
 		const buttonEdit = document.getElementById('buttonEdit');
 		let imageValid = true;
 
 		const validateFields = () => {
-			let buttonState = false;
-
-			manualInputs.forEach(e => {
-				if (e.children[1].value == "") {
-					buttonState = true;
-				}
-			})
-
-			buttonEdit.disabled = buttonState;
-			if (!imageValid) {
-				buttonEdit.disabled = true;
-			}
+			const requiredInputs = manualForm.querySelectorAll('input[name="nombreModificar"], input[name="primerApellidoModificar"], input[name="segundoApellidoModificar"], input[name="cedulaModificar"], input[name="correoModificar"]');
+			let allFilled = [...requiredInputs].every(i => i.value.trim() !== "");
+			buttonEdit.disabled = !allFilled || !imageValid;
 		}
 		manualForm.addEventListener('input', validateFields);
+		validateFields();
 
 		// Validate photo
 		const ValidFormats = [

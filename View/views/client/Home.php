@@ -3,7 +3,7 @@ $head = file_get_contents('./View/views/components/Head.php');
 $header = file_get_contents('./View/views/components/Header.php');
 $sidebar = file_get_contents('./View/views/components/ClientMenu.php');
 
-if ($_SESSION["perfiles"] != 'cliente') {
+if ($_SESSION["perfiles"] != 'client') {
 	header('Location: ./?alerta=error');
 }
 

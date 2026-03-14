@@ -63,18 +63,15 @@ if ($_SESSION["perfiles"] != 'admin') {
 				</div>
 			</form>
 			<section class="d-none px-4 pb-4" id="qrForm">
-				<div class="position-relative mt-3">
-					<div class="position-absolute w-100 d-flex justify-content-between">
-						<div class="" id="sourceSelectPanel" style="display:none">
-							<select id="sourceSelect" class="form-select" style="max-width:300px"></select>
-						</div>
-						<button class="btn btn-comedor" id="startButton">
-							<i class="fa-solid fa-play me-1"></i>
-							Iniciar
-						</button>
+				<div class="d-flex justify-content-between align-items-center mt-3 mb-2 gap-2">
+					<div id="sourceSelectPanel" style="display:none; flex:1">
+						<select id="sourceSelect" class="form-select form-select-sm"></select>
 					</div>
-					<video id="video" height="320" class="w-100 mx-auto rounded"></video>
+					<button class="btn btn-comedor btn-sm" id="startButton">
+						<i class="fa-solid fa-play me-1"></i>Iniciar
+					</button>
 				</div>
+				<video id="video" height="320" class="w-100 mx-auto rounded"></video>
 				<pre><code id="result" class="d-none"></code></pre>
 			</section>
 		</div>
@@ -146,53 +143,81 @@ if ($_SESSION["perfiles"] != 'admin') {
 				evaluateIdCard(idCard);
 			});
 
-			// QR System
-			function decodeOnce(codeReader, selectedDeviceId) {
-				codeReader.decodeFromInputVideoDevice(selectedDeviceId, 'video').then((result) => {
-					evaluateIdCard(result.text);
-					codeReader.reset();
-					setTimeout(() => {
-						decodeOnce(codeReader, selectedDeviceId);
-					}, 2000)
-				}).catch((err) => {
-					document.getElementById('result').textContent = err
-				})
+		// QR System
+		function decodeOnce(codeReader, selectedDeviceId) {
+			codeReader.decodeFromInputVideoDevice(selectedDeviceId, 'video').then((result) => {
+				evaluateIdCard(result.text);
+				codeReader.reset();
+				setTimeout(() => {
+					decodeOnce(codeReader, selectedDeviceId);
+				}, 2000)
+			}).catch((err) => {
+				document.getElementById('result').textContent = err;
+			})
+		}
+
+		const startButton = document.getElementById('startButton');
+		let codeReader = null;
+
+		function stopCamera() {
+			if (codeReader) {
+				codeReader.reset();
+				codeReader = null;
+			}
+			const vid = document.getElementById('video');
+			if (vid.srcObject) {
+				vid.srcObject.getTracks().forEach(t => t.stop());
+				vid.srcObject = null;
+			}
+			document.getElementById('sourceSelectPanel').style.display = 'none';
+			startButton.innerHTML = '<i class="fa-solid fa-play me-1"></i> Iniciar';
+		}
+
+		startButton.addEventListener('click', () => {
+			if (codeReader) {
+				stopCamera();
+				return;
 			}
 
-			window.addEventListener('load', function() {
-				let selectedDeviceId;
-				const codeReader = new ZXing.BrowserQRCodeReader()
+			codeReader = new ZXing.BrowserQRCodeReader();
+			codeReader.getVideoInputDevices()
+				.then((videoInputDevices) => {
+					if (videoInputDevices.length === 0) {
+						Alert('error', 'No se encontró ninguna cámara.');
+						codeReader = null;
+						return;
+					}
 
-				codeReader.getVideoInputDevices()
-					.then((videoInputDevices) => {
-						const sourceSelect = document.getElementById('sourceSelect')
-						selectedDeviceId = videoInputDevices[0].deviceId
-						if (videoInputDevices.length >= 1) {
-							videoInputDevices.forEach((element) => {
-								const sourceOption = document.createElement('option')
-								sourceOption.text = element.label
-								sourceOption.value = element.deviceId
-								sourceSelect.appendChild(sourceOption)
-							})
+					const sourceSelect = document.getElementById('sourceSelect');
+					const sourceSelectPanel = document.getElementById('sourceSelectPanel');
+					sourceSelect.innerHTML = '';
 
-							sourceSelect.onchange = () => {
-								selectedDeviceId = sourceSelect.value;
-							};
-
-							const sourceSelectPanel = document.getElementById('sourceSelectPanel')
-							sourceSelectPanel.style.display = 'block'
-						}
-
-						const startButton = document.getElementById('startButton');
-						startButton.addEventListener('click', () => {
-							video.classList.add('general-shadow');
-							decodeOnce(codeReader, selectedDeviceId);
-						})
-					})
-					.catch((err) => {
-						console.error(err)
+					videoInputDevices.forEach((device) => {
+						const option = document.createElement('option');
+						option.text = device.label || 'Cámara ' + (sourceSelect.length + 1);
+						option.value = device.deviceId;
+						sourceSelect.appendChild(option);
 					});
-			});
+
+					sourceSelectPanel.style.display = 'block';
+					let selectedDeviceId = sourceSelect.value;
+
+					sourceSelect.onchange = () => {
+						selectedDeviceId = sourceSelect.value;
+						codeReader.reset();
+						decodeOnce(codeReader, selectedDeviceId);
+					};
+
+					video.classList.add('general-shadow');
+					startButton.innerHTML = '<i class="fa-solid fa-stop me-1"></i> Detener';
+					decodeOnce(codeReader, selectedDeviceId);
+				})
+				.catch((err) => {
+					Alert('error', 'No se pudo acceder a la cámara. Verifica los permisos.');
+					console.error(err);
+					codeReader = null;
+				});
+		});
 
 			// Alerts with Sweet Alert
 			function Alert(iconType, message, name = false, profilePhoto = false) {

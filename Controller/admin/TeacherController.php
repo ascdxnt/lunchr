@@ -87,6 +87,11 @@ class TeacherController
 			$teacher->setEmail($email);
 
 		if ($teacher->getName() != null && $teacher->getFirstLastName() != null && $teacher->getSecondLastName() != null && $teacher->getIdCard() != null && $teacher->getPassword() != null && $teacher->getEmail() != null && $teacher->getProfilePhoto() != null) {
+			if ($teacherMethods->FindByIdCard($teacher->getIdCard()) || $teacherMethods->FindByEmail($teacher->getEmail())) {
+				$profilePhotoController->DeleteProfilePhoto($teacher->getProfilePhoto());
+				header('Location: ./?dir=admin&controller=Teacher&action=Index&id=crear&alerta=duplicado');
+				return;
+			}
 			if ($teacherMethods->Create($teacher)) {
 				$subject = "Cuenta de Comedor";
 				$emailTemplate->IndividualEmail($teacher->getEmail(), $subject, $password, $teacher->getName(), $teacher->getFirstLastName());
@@ -176,7 +181,7 @@ class TeacherController
 
 		if ($teacher = $teacherMethods->Find($id)) {
 			$photoPath = $teacher->getProfilePhoto();
-			if ($name != null) {
+			if ($name != null && $name != "") {
 				$photoPath = $profilePhotoController->GenerateProfilePhoto($name, $tmp_path, $size, $type);
 				$profilePhotoController->DeleteProfilePhoto($teacher->getProfilePhoto());
 			}
@@ -191,7 +196,7 @@ class TeacherController
 			if (filter_var($email, FILTER_VALIDATE_EMAIL))
 				$teacher->setEmail($email);
 
-			if ($password != null) {
+			if ($password != null && $password != "") {
 				$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 				$teacher->setPassword($hashedPassword);
 				$teacherMethods->UpdatePassword($hashedPassword, $id);

@@ -6,7 +6,7 @@ $sidebar = file_get_contents('./View/views/components/ClientMenu.php');
 $userId = $_SESSION['usuario']['Id'];
 $userProfile = $_SESSION['usuario']['Perfil'];
 
-if ($_SESSION["perfiles"] != 'cliente') {
+if ($_SESSION["perfiles"] != 'client') {
 	header('Location: ./?alerta=error');
 }
 
@@ -93,7 +93,7 @@ if ($_SESSION["perfiles"] != 'cliente') {
 	</div>
 	<div>
 		<div id="registroAsistencias" hidden>
-			<?php echo $attendanceRecord ?>
+			<?php echo $registroAsistencias ?>
 		</div>
 		<div id="datosBar" hidden data-idusuario='<?php echo $userId ?>' data-perfilusuario='<?php echo $userProfile ?>'></div>
 

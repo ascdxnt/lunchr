@@ -177,15 +177,13 @@ class StudentMethods
 
 	function UpdatePassword($password, $studentId)
 	{
-		$success = false;
 		$connection = new Connection();
-
-		$sql = "UPDATE ESTUDIANTE SET CONTRASENA='" . $password . "'
-                                        Where `ID` =" . $studentId;
-		if ($connection->Execute($sql)) {
-			$success = true;
-		}
-		$connection->Close();
+		$mysqli = $connection->Raw();
+		$stmt = $mysqli->prepare("UPDATE ESTUDIANTE SET CONTRASENA=? WHERE ID=?");
+		$stmt->bind_param('si', $password, $studentId);
+		$success = $stmt->execute();
+		$stmt->close();
+		$mysqli->close();
 		return $success;
 	}
 }

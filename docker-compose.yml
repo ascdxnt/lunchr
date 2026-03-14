@@ -18,6 +18,13 @@ services:
       DB_PASS: ${DB_PASS:-root}
       DB_NAME: ${DB_NAME:-COMEDOR}
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: scms-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+
   db:
     image: mysql:8.0
     container_name: scms-db

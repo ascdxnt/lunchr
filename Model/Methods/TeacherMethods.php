@@ -154,14 +154,13 @@ class TeacherMethods
 
 	function UpdatePassword($password, $teacherId)
 	{
-		$success = false;
 		$connection = new Connection();
-
-		$sql = "UPDATE PROFESOR SET CONTRASENA='" . $password . "' Where `ID` =" . $teacherId;
-		if ($connection->Execute($sql)) {
-			$success = true;
-		}
-		$connection->Close();
+		$mysqli = $connection->Raw();
+		$stmt = $mysqli->prepare("UPDATE PROFESOR SET CONTRASENA=? WHERE ID=?");
+		$stmt->bind_param('si', $password, $teacherId);
+		$success = $stmt->execute();
+		$stmt->close();
+		$mysqli->close();
 		return $success;
 	}
 }

@@ -1,4 +1,6 @@
 <?php
+ob_start();
+session_start();
 require_once './Core/DefaultRoute.php';
 require_once './Core/Router.php';
 

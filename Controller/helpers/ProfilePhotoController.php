@@ -4,7 +4,7 @@ class ProfilePhotoController
 {
 	public function GenerateProfilePhoto($name, $tmp_path, $size, $type)
 	{
-		if ($name == null) {
+		if ($name == null || $name == "") {
 			return "./View/assets/profile/default.jpg";
 		}
 
@@ -13,7 +13,7 @@ class ProfilePhotoController
 		}
 
 		$extension = pathinfo($name, PATHINFO_EXTENSION);
-		$directory = $_SERVER['DOCUMENT_ROOT'] . '/comedor/View/assets/profile/';
+		$directory = $_SERVER['DOCUMENT_ROOT'] . '/View/assets/profile/';
 		$newFileName = date('dmYHis');
 		move_uploaded_file($tmp_path, $directory . $newFileName . "." . $extension);
 
